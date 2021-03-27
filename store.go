@@ -218,13 +218,9 @@ func (s *Store) Flush() {
 }
 
 // Regenerate generate a new session identifier
-func (s *Store) Regenerate() error {
-	err := s.Handler.Destroy(s.GetID())
-	if err != nil {
-		return err
-	}
+func (s *Store) Regenerate() {
+	s.Handler.Destroy(s.GetID())
 	s.SetID(s.generateSessionID())
-	return nil
 }
 
 func (s *Store) generateSessionID() string {

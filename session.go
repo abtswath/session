@@ -22,7 +22,7 @@ type Session interface {
 
 	Flush()
 
-	Regenerate() error
+	Regenerate()
 
 	GetHandler() HandlerInterface
 }
