@@ -108,6 +108,7 @@ func (s *Store) Start() error {
 	if err := s.loadSession(); err != nil {
 		return err
 	}
+	s.SetCookie()
 	return nil
 }
 
@@ -141,6 +142,7 @@ func (s *Store) readFromHandler() (Value, error) {
 	data, err := s.Handler.Read(s.GetID())
 	if err != nil {
 		if os.IsNotExist(err) {
+			s.Regenerate()
 			return Value{}, nil
 		}
 		return nil, err
@@ -172,7 +174,6 @@ func (s *Store) Save() error {
 	if err != nil {
 		return err
 	}
-	s.SetCookie()
 	return s.Handler.Write(s.GetID(), data)
 }
 
@@ -227,10 +228,6 @@ func (s *Store) generateSessionID() string {
 	return randomString(40)
 }
 
-func isValidID(id string) bool {
-	return len(id) == 40
-}
-
 // GetID get session id
 func (s *Store) GetID() string {
 	return s.id
@@ -238,11 +235,7 @@ func (s *Store) GetID() string {
 
 // SetID set session id
 func (s *Store) SetID(id string) {
-	if isValidID(id) {
-		s.id = id
-	} else {
-		s.id = s.generateSessionID()
-	}
+	s.id = id
 }
 
 func (s *Store) GetHandler() HandlerInterface {
